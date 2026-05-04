@@ -1,3 +1,9 @@
+/*
+Author: Joey Jaikaran
+Date: 
+Purpose: 
+*/
+
 import  { state, initGame } from "./state.js"
 
 function getRandomPokemon() {
