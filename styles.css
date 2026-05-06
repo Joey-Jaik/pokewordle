@@ -1,0 +1,374 @@
+/*
+Author: Joey Jaikaran
+Date: 
+Purpose: 
+*/
+
+/* ── RESET & BASE ───────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── VARIABLES ──────────────────────────────────────── */
+:root {
+  --bg:          #1a1a2e;
+  --bg-card:     #16213e;
+  --bg-tile:     #0f3460;
+  --green:       #538d4e;
+  --yellow:      #b59f3b;
+  --grey:        #3a3a3c;
+  --text:        #ffffff;
+  --text-muted:  #818384;
+  --accent:      #e94560;
+  --border:      rgba(255, 255, 255, 0.1);
+}
+
+/* ── BODY ───────────────────────────────────────────── */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Arial', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── UTILITY ────────────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+
+/* ── LOADING SCREEN ─────────────────────────────────── */
+#loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ── APP ────────────────────────────────────────────── */
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  padding: 1rem;
+  gap: 1.5rem;
+}
+
+/* ── HEADER ─────────────────────────────────────────── */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+
+#streak-display {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+#mode-switcher {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#mode-switcher button {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#mode-switcher button.active {
+  background: var(--accent);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+#mode-switcher button:hover:not(.active) {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+
+/* ── BOARD ──────────────────────────────────────────── */
+#board {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  align-items: center;
+}
+
+/* ── TILE ROWS ──────────────────────────────────────── */
+.tile-row {
+  display: flex;
+  gap: 6px;
+}
+
+/* ── TILES ──────────────────────────────────────────── */
+.tile {
+  width: 52px;
+  height: 52px;
+  border: 2px solid var(--bg-tile);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text);
+  background-color: var(--bg-card);
+  transition: border-color 0.1s;
+  user-select: none;
+}
+
+.tile.green {
+  background-color: var(--green);
+  border-color: var(--green);
+}
+
+.tile.yellow {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
+}
+
+.tile.grey {
+  background-color: var(--grey);
+  border-color: var(--grey);
+}
+
+/* ── TILE FLIP ANIMATION ────────────────────────────── */
+@keyframes flip {
+  0%   { transform: rotateX(0deg); }
+  50%  { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+.tile.flip {
+  animation: flip 0.5s ease-in-out;
+}
+
+/* ── INPUT AREA ─────────────────────────────────────── */
+#input-area {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  align-items: flex-start;
+}
+
+#input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+#guess-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#guess-input:focus {
+  border-color: var(--accent);
+}
+
+#submit-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--accent);
+  color: var(--text);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+#submit-btn:hover {
+  opacity: 0.85;
+}
+
+/* ── AUTOCOMPLETE ───────────────────────────────────── */
+#suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 100;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  text-transform: capitalize;
+}
+
+.suggestion-item:hover,
+.suggestion-item.active {
+  background-color: var(--bg-tile);
+}
+
+.suggestion-item img {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.suggestion-item span {
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+/* ── HINTS ──────────────────────────────────────────── */
+#hints-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.hint-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.silhouette {
+  width: 80px;
+  height: 80px;
+  filter: brightness(0);
+  image-rendering: pixelated;
+}
+
+/* ── MODAL ──────────────────────────────────────────── */
+#modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+#modal-content {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-sprite {
+  width: 120px;
+  height: 120px;
+  image-rendering: pixelated;
+}
+
+#modal-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+.win-message {
+  color: var(--green);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.lose-message {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.streak-info {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.countdown {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.play-again-btn {
+  padding: 0.75rem 2rem;
+  background-color: var(--accent);
+  color: var(--text);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 0.5rem;
+}
+
+.play-again-btn:hover {
+  opacity: 0.85;
+}
