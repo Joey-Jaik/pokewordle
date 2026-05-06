@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokéwordle</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Loading screen -->
+  <div id="loading-screen">
+    <p>Loading Pokédex...</p>
+  </div>
+
+  <!-- Main app -->
+  <div id="app" class="hidden">
+
+    <!-- Header -->
+    <header>
+      <h1>Pokéwordle</h1>
+      <div id="streak-display">🔥 0</div>
+      <div id="mode-switcher">
+        <button id="daily-btn" class="active">Daily</button>
+        <button id="freeplay-btn">Free Play</button>
+      </div>
+    </header>
+
+    <!-- Game board -->
+    <div id="board"></div>
+
+    <!-- Input area -->
+    <div id="input-area">
+      <div id="input-wrapper">
+        <input 
+          type="text" 
+          id="guess-input" 
+          placeholder="Search for a Pokémon..." 
+          autocomplete="off"
+        />
+        <div id="suggestions"></div>
+      </div>
+      <button id="submit-btn">Guess</button>
+    </div>
+
+    <!-- Hints -->
+    <div id="hints-container"></div>
+
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="hidden">
+    <div id="modal-content"></div>
+  </div>
+
+  <script type="module" src="js/ui.js"></script>
+</body>
+</html>
