@@ -6,37 +6,39 @@ Purpose:
 
 import { state, initState } from "./state.js";
 import { handleGuess, startGame, switchMode } from "./game.js";
+import { startDailyGame, hasPlayedToday } from "./daily.js";
 
-const elements = {
-    app: document.getElementById("app"),
-    board: document.getElementById("board"),
-    board: document.getElementById("board"),
-    input: document.getElementById("guess-inout"),
-    suggestions: document.getElementById("suggestions"),
-    submitBtn: document.getElementById("submit-btn"),
-    hintsContainer: document.getElementById("hints-container"),
-    streakDisplay: document.getElementById("streak-display"),
-    dailyBtn: document.getElementById("daily-btn"),
-    freeplayBtn: document.getElementById("freeplay-btn"),
-    modal: document.getElementById("modal"),
-    modalContent: document.getElementById("modal-content"),
-    loadingScreen: document.getElementById("loading-screen"),
-};
+let elements = {};
 
 async function init() {
-    try{
-        await initState();
-        startGame(state.gameMode);
-        setupEventListeners();
-        renderBoard();
-        updateStreak();
-        elements.loadingScreen.classList.add("hidden");
-        elements.app.classList.remove("hidden");
-    }
-    catch (error) {
-        elements.loadingScreen.textContent = "Something went wrong. Please refresh the page.";
-        console.error(error);
-    }
+  elements.app = document.getElementById("app");
+  elements.board = document.getElementById("board");
+  elements.input = document.getElementById("guess-input");
+  elements.suggestions = document.getElementById("suggestions");
+  elements.submitBtn = document.getElementById("submit-btn");
+  elements.hintsContainer = document.getElementById("hints-container");
+  elements.streakDisplay = document.getElementById("streak-display");
+  elements.dailyBtn = document.getElementById("daily-btn");
+  elements.freeplayBtn = document.getElementById("freeplay-btn");
+  elements.modal = document.getElementById("modal");
+  elements.modalContent = document.getElementById("modal-content");
+  elements.loadingScreen = document.getElementById("loading-screen");
+
+  try {
+    await initState();
+    startGame(state.gameMode);
+    setupEventListeners();
+    renderBoard();
+    updateStreak();
+    elements.loadingScreen.classList.add("hidden");
+    elements.app.classList.remove("hidden");
+
+    if (state.gameMode === "daily" && hasPlayedToday())
+        showModal(state.won, state.answer);
+  } catch (error) {
+    elements.loadingScreen.textContent = "Something went wrong. Please refresh the page.";
+    console.error(error);
+  }
 }
 
 function renderBoard() {
@@ -152,6 +154,7 @@ function renderSuggestions(matches) {
 function selectSuggestion(name) {
     elements.input.value = name;
     clearSuggestions();
+    elements.input.focus();
 }
 
 function clearSuggestions() {
@@ -160,8 +163,11 @@ function clearSuggestions() {
 }
 
 function handleOutsideClick(e) {
-    if (!elements.input.contains(e.target) && !elements.suggetions.contains(e.target))
-        clearSuggestions();
+  if (!elements.input || !elements.suggestions) return;
+  if (!elements.input.contains(e.target) &&
+      !elements.suggestions.contains(e.target)) {
+    clearSuggestions();
+  }
 }
 
 function setupSubmit() {
@@ -263,11 +269,25 @@ function showModal(won, answer) {
     if (state.gameMode === "daily"){
         const streakE1 = document.createElement("p");
         streakE1.textContent = `Current streak: ${state.streak}`;
-        streake1.classList.add("streak-info");
+        streakE1.classList.add("streak-info");
 
         const countdown = document.createElement("p");
         countdown.classList.add("countdown");
+
+        const freeplayBtn = document.createElement("button");
+        freeplayBtn.textContent = "Play Free Play";
+        freeplayBtn.classList.add("play-again-btn");
+        freeplayBtn.addEventListener("click", () => {
+            elements.modal.classList.add("hidden");
+            switchMode("freeplay");
+            renderBoard();
+            elements.hintsContainer.innerHTML = "";
+            elements.freeplayBtn.classList.add("active");
+            elements.dailyBtn.classList.remove("active");
+        });
+
         content.appendChild(streakE1);
+        content.appendChild(freeplayBtn);
         content.appendChild(countdown);
         startCountdown(countdown);
     }
@@ -313,6 +333,10 @@ function setupModeSwitcher() {
         elements.hintsContainer.innerHTML = "";
         elements.dailyBtn.classList.add("active");
         elements.freeplayBtn.classList.remove("active");
+
+        if (hasPlayedToday()) {
+            showModal(state.won, state.answer);
+        }
     });
 
     elements.freeplayBtn.addEventListener("click", () => {
@@ -325,10 +349,19 @@ function setupModeSwitcher() {
     });
 }
 
+function setupModalClose() {
+  elements.modal.addEventListener("click", (e) => {
+    if (e.target === elements.modal && state.gameMode === "freeplay") {
+      elements.modal.classList.add("hidden");
+    }
+  });
+}
+
 function setupEventListeners() {
     setupAutocomplete();
     setupSubmit();
     setupModeSwitcher();
+    setupModalClose();
 }
 
 // Run init only after HTML has fully loaded
