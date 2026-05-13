@@ -6,9 +6,22 @@ Purpose:
 
 const POKEAPI_BASE = "https://pokeapi.co/api/v2";
 const TOTAL_POKEMON = 1025;
-const BATCH_SIZE = 50;
+const BATCH_SIZE = 20;
 const CACHE_KEY = "pokewordle_data";
-const CACHE_VERSION = "1.0";
+const CACHE_VERSION = "1.1";
+
+async function fetchWithRetry(url, retries = 3, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+    }
+  }
+}
 
 async function buildPokemonList(){
     // Check to see if any data is loaded in cache already, if it is then return it, if not then load data from API
@@ -19,8 +32,8 @@ async function buildPokemonList(){
     // .json on it to take the response body and parse it into a JavaScript object 
     // This object has a results attribute which is the array of pokemon objects and each one of these objects has a URL 
     // so we are creating a new container that just contains the URL's for each pokemon
-    const listRes = await fetch(`${POKEAPI_BASE}/pokemon?limit=${TOTAL_POKEMON}`);
-    const listData = await listRes.json();
+    const listRes = await fetchWithRetry(`${POKEAPI_BASE}/pokemon?limit=${TOTAL_POKEMON}`);
+    const listData = listRes;
     const urls = listData.results.map(p => p.url);
 
     // Create arrays that will hold all pokemon data objects with data from pokemon API, 
@@ -85,7 +98,7 @@ async function fetchInBatches(urls){
         // and then we await for them all to finish 
         // This will now hold an array with all available data on every pokemon in this batch
         const batchResults = await Promise.all(
-            batch.map(url => fetch(url).then(res => res.json()))
+            batch.map(url => fetchWithRetry(url))
         );
         // Use spread operator to unpack batchResults and add individual objects to results
         results.push(...batchResults);
@@ -105,7 +118,7 @@ async function fetchSpeciesData(urls){
     for(let i = 0; i < speciesUrls.length; i += BATCH_SIZE){
         const batch = speciesUrls.slice(i, i + BATCH_SIZE);
         const batchResults = await Promise.all(
-            batch.map(url => fetch(url).then(res => res.json()))
+            batch.map(url => fetchWithRetry(url))
         );
 
         results.push(...batchResults);
@@ -114,45 +127,30 @@ async function fetchSpeciesData(urls){
     return results;
 }
 
-async function fetchWeaknesses(pokemonList){
-    const typeCache = {};
+async function fetchWeaknesses(pokemonList) {
+  const allTypes = [
+    "normal", "fire", "water", "electric", "grass", "ice",
+    "fighting", "poison", "ground", "flying", "psychic", "bug",
+    "rock", "ghost", "dragon", "dark", "steel", "fairy"
+  ];
 
-    async function getTypeWeaknesses(typeName){
-        // Check if cache object already has weaknesses for this type
-        if (typeCache[typeName]) return typeCache[typeName];
+  const typeCache = {};
 
-        // Fetch data from URL and store weaknesses in cache object for this type
-        const res = await fetch(`${POKEAPI_BASE}/type/${typeName}`);
-        const data = await res.json();
-
-        const weaknesses = data.damage_relations.double_damage_from.map(t => t.name);
-
-        typeCache[typeName] = weaknesses;
-
-        return weaknesses;
+  for (const typeName of allTypes) {
+    try {
+      const data = await fetchWithRetry(`${POKEAPI_BASE}/type/${typeName}`);
+      typeCache[typeName] = data.damage_relations.double_damage_from.map(t => t.name);
+    } catch (err) {
+      console.warn(`Failed to fetch type: ${typeName}`, err);
+      typeCache[typeName] = [];
     }
+  }
 
-    const allWeaknesses = await Promise.all(
-        // Go through every pokemon in list
-        pokemonList.map(async (pokemon) => {
-            // Create new list of all the types for that pokemon
-            const typeNames = pokemon.types.map(t => t.type.name);
-
-            // Use the list of type names to create an array of all the weaknesses for the specifed types, 
-            // so it will be an array of arrays
-            const weaknessArrays = await Promise.all(
-                typeNames.map(typeName => getTypeWeaknesses(typeName))
-            );
-
-            // Flatten weakness array into individual parts, and then put it in a set to remove any duplicates, 
-            // and then use spread operator to turn it back into a regular array
-            const combined = [...new Set(weaknessArrays.flat())];
-
-            return combined;
-        })
-    );
-
-    return allWeaknesses;
+  return pokemonList.map(pokemon => {
+    const typeNames = pokemon.types.map(t => t.type.name);
+    const weaknessArrays = typeNames.map(typeName => typeCache[typeName] || []);
+    return [...new Set(weaknessArrays.flat())];
+  });
 }
 
 export { buildPokemonList };
