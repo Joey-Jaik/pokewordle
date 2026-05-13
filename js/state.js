@@ -107,6 +107,13 @@ function submitGuess(name) {
     else if (state.guesses.length >= 6) {
         state.gameOver = true;
         state.won = false;
+
+        if (state.gameMode === "daily") {
+            state.streak = 0;
+            state.dailyWon = false;
+            state.lastPlayed = getTodayString();
+            saveStreak();
+        }
     }
 
     return result;
