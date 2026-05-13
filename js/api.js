@@ -1,7 +1,10 @@
 /*
 Author: Joey Jaikaran
-Date: 
-Purpose: 
+Date: May 13, 2026
+Purpose: Fetches and caches all Pokémon data from PokeAPI on first load.
+         Retrieves Pokémon details, species data, and type weaknesses in
+         batches and stores the results in localStorage to avoid repeated
+         API calls on subsequent visits.
 */
 
 const POKEAPI_BASE = "https://pokeapi.co/api/v2";

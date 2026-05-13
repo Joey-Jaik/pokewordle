@@ -1,7 +1,11 @@
 /*
 Author: Joey Jaikaran
-Date: 
-Purpose: 
+Date: May 13, 2026
+Purpose: Handles daily game mode logic. Deterministically selects the
+         same Pokémon for all players on a given day by calculating the
+         number of days since a fixed start date and using it as an index
+         into the gen 1-3 Pokémon pool. Also checks whether the player
+         has already completed today's daily puzzle.
 */
 
 import { state, initGame } from "./state.js"

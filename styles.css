@@ -1,7 +1,10 @@
 /*
 Author: Joey Jaikaran
-Date: 
-Purpose: 
+Date: May 13, 2026
+Purpose: Styles for Pokéwordle. Defines the Pokémon themed visual design
+         including the animated background, game card layout, tile grid,
+         flip animations, autocomplete dropdown, hint cards, modal, and
+         responsive mobile styles.
 */
 
 @font-face {

@@ -1,7 +1,12 @@
 /*
 Author: Joey Jaikaran
-Date: 
-Purpose: 
+Date: May 13, 2026
+Purpose: Manages all UI rendering and user interactions for Pokéwordle.
+         Handles initialising the app, building the game board dynamically
+         based on answer length, rendering tile flip animations, autocomplete
+         suggestions with keyboard navigation, progressive hint cards,
+         win/lose modal, daily streak display, mode switching, and
+         responsive behaviour. Acts as the entry point for the application.
 */
 
 import { state, initState } from "./state.js";

@@ -1,7 +1,11 @@
 /*
 Author: Joey Jaikaran
-Date: 
-Purpose: 
+Date: May 13, 2026
+Purpose: Manages all game state for Pokéwordle. Holds the central state
+         object containing Pokémon data, current answer, guesses, hints,
+         game mode, and streak. Exposes functions for initialising the
+         game, submitting guesses, comparing letters, generating hints,
+         and tracking the daily streak via localStorage.
 */
 
 import { buildPokemonList } from "./api.js";

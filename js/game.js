@@ -1,7 +1,11 @@
 /*
 Author: Joey Jaikaran
-Date: 
-Purpose: 
+Date: May 13, 2026
+Purpose: Acts as the intermediary between the game logic and the UI.
+         Handles starting games in either daily or free play mode,
+         processing guess submissions, and switching between game modes.
+         Returns a structured outcome object to the UI after each guess
+         containing the result, next hint, and game over state.
 */
 
 import { state, submitGuess, getNextHint } from "./state.js";
