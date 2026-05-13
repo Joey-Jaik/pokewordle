@@ -45,8 +45,12 @@ function renderBoard() {
     elements.board.innerHTML = "";
     const answerLength = state.answer.name.length;
 
-    // Create dynamic tile sizing based on how long the pokemon name is
-    const tileSize = answerLength > 10 ? 40 : answerLength > 8 ? 46 : 52;
+    // Create dynamic tile sizing based on how long the pokemon name is, 
+    // and whether game is being played on mobile or desktop
+    const isMobile = window.innerWidth <= 480;
+    const tileSize = answerLength > 10 ? (isMobile ? 26 : 40) : 
+                     answerLength > 8  ? (isMobile ? 30 : 46) : 
+                                         (isMobile ? 34 : 52);
 
     // Build game board
     for (let row = 0; row < 6; row++){
