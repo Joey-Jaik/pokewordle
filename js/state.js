@@ -21,6 +21,7 @@ const state = {
     gameMode: "daily",
     gameOver: false,
     won: false,
+    dailyWon: false,
     streak: 0,
     lastPlayed: null,
 };
@@ -45,12 +46,14 @@ function loadStreak(){
     const parsed = JSON.parse(raw);
     state.streak = parsed.streak;
     state.lastPlayed = parsed.lastPlayed;
+    state.dailyWon = parsed.dailyWon || false;
 }
 
 function saveStreak(){
     localStorage.setItem("pokewordle_streak", JSON.stringify({
         streak: state.streak,
-        lastPlayed: state.lastPlayed
+        lastPlayed: state.lastPlayed,
+        dailyWon: state.dailyWon,
     }));
 }
 
@@ -95,7 +98,11 @@ function submitGuess(name) {
     if (guess.name === state.answer.name){
         state.gameOver = true;
         state.won = true;
-        if (state.gameMode === "daily") updateStreak();
+        if (state.gameMode === "daily") {
+            state.dailyWon = true;
+            updateStreak();
+            saveStreak();
+        }
     }
     else if (state.guesses.length >= 6) {
         state.gameOver = true;
@@ -164,4 +171,4 @@ function buildHint(hintIndex){
     }
 }
 
-export { state, initState, initGame, updateStreak, submitGuess, getNextHint };
+export { state, initState, initGame, updateStreak, submitGuess, getNextHint, saveStreak };

@@ -34,7 +34,7 @@ async function init() {
     elements.app.classList.remove("hidden");
 
     if (state.gameMode === "daily" && hasPlayedToday())
-        showModal(state.won, state.answer);
+        showModal(state.dailyWon, state.answer);
   } catch (error) {
     elements.loadingScreen.textContent = "Something went wrong. Please refresh the page.";
     console.error(error);
@@ -63,7 +63,13 @@ function renderBoard() {
 }
 
 function updateStreak() {
-    elements.streakDisplay.textContent = `🔥 ${state.streak}`;
+    if (state.gameMode === "daily") {
+        elements.streakDisplay.classList.remove("hidden");
+        elements.streakDisplay.textContent = `🔥 ${state.streak}`;
+    }
+    else {
+        elements.streakDisplay.classList.add("hidden");
+    }
 }
 
 function setupAutocomplete() {
@@ -284,6 +290,7 @@ function showModal(won, answer) {
             elements.hintsContainer.innerHTML = "";
             elements.freeplayBtn.classList.add("active");
             elements.dailyBtn.classList.remove("active");
+            updateStreak();
         });
 
         content.appendChild(streakE1);
@@ -334,8 +341,10 @@ function setupModeSwitcher() {
         elements.dailyBtn.classList.add("active");
         elements.freeplayBtn.classList.remove("active");
 
+        updateStreak();
+
         if (hasPlayedToday()) {
-            showModal(state.won, state.answer);
+            showModal(state.dailyWon, state.answer);
         }
     });
 
@@ -346,6 +355,8 @@ function setupModeSwitcher() {
         elements.hintsContainer.innerHTML = "";
         elements.freeplayBtn.classList.add("active");
         elements.dailyBtn.classList.remove("active");
+
+        updateStreak();
     });
 }
 

@@ -4,6 +4,13 @@ Date:
 Purpose: 
 */
 
+@font-face {
+  font-family: 'PokemonSolid';
+  src: url('assets/pokemon-solid.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* ── RESET & BASE ───────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -13,27 +20,38 @@ Purpose:
 
 /* ── VARIABLES ──────────────────────────────────────── */
 :root {
-  --bg:          #1a1a2e;
-  --bg-card:     #16213e;
-  --bg-tile:     #0f3460;
+  --font-pokemon: 'PokemonSolid', sans-serif;
+  --font-game: 'Press Start 2P', monospace;
+  --bg:          #0D47A1;
+  --bg-card:     #1565C0;
+  --bg-tile:     #1976D2;
+  --bg-board:    #0a1628;
   --green:       #538d4e;
-  --yellow:      #b59f3b;
+  --yellow:      #FFCB05;
   --grey:        #3a3a3c;
   --text:        #ffffff;
-  --text-muted:  #818384;
-  --accent:      #e94560;
-  --border:      rgba(255, 255, 255, 0.1);
+  --text-muted:  #BBDEFB;
+  --accent:      #FFCB05;
+  --border:      #FFCB05;
+  --red:         #CC0000;
 }
 
 /* ── BODY ───────────────────────────────────────────── */
 body {
-  background-color: var(--bg);
+  font-family: var(--font-game);
+  background-image: url('assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: var(--text);
-  font-family: 'Arial', sans-serif;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+button {
+  font-family: var(--font-game);
 }
 
 /* ── UTILITY ────────────────────────────────────────── */
@@ -61,22 +79,37 @@ body {
   max-width: 600px;
   padding: 1rem;
   gap: 1.5rem;
+  background-color: var(--bg-board);
+  border: 3px solid var(--yellow);
+  border-radius: 12px;
+  margin: 2rem auto;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 /* ── HEADER ─────────────────────────────────────────── */
 header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--yellow);
+  gap: 0.75rem;
+}
+
+#header-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
 }
 
 header h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--accent);
+  font-family: var(--font-pokemon);
+  font-size: 5rem;
+  color: var(--yellow);
+  text-shadow: 3px 3px 0px var(--bg), 4px 4px 0px var(--bg-card);
   letter-spacing: 0.05em;
 }
 
@@ -93,24 +126,23 @@ header h1 {
 
 #mode-switcher button {
   padding: 0.4rem 1rem;
-  border: 1px solid var(--border);
+  border: 2px solid var(--yellow);
   border-radius: 4px;
   background: transparent;
-  color: var(--text-muted);
+  color: var(--yellow);
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 #mode-switcher button.active {
-  background: var(--accent);
-  color: var(--text);
-  border-color: var(--accent);
+  background: var(--yellow);
+  color: var(--bg);
+  font-weight: 700;
 }
 
 #mode-switcher button:hover:not(.active) {
-  border-color: var(--text-muted);
-  color: var(--text);
+  background: rgba(255, 203, 5, 0.15);
 }
 
 /* ── BOARD ──────────────────────────────────────────── */
@@ -188,27 +220,31 @@ header h1 {
 #guess-input {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
+  background-color: var(--bg);
+  border: 2px solid var(--yellow);
   border-radius: 4px;
   color: var(--text);
-  font-size: 1rem;
+  font-size: 0.9rem;
   outline: none;
   transition: border-color 0.2s;
 }
 
 #guess-input:focus {
-  border-color: var(--accent);
+  border-color: var(--text);
+}
+
+#guess-input::placeholder {
+  color: var(--text-muted);
 }
 
 #submit-btn {
   padding: 0.75rem 1.5rem;
-  background-color: var(--accent);
-  color: var(--text);
+  background-color: var(--yellow);
+  color: var(--bg);
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s;
   white-space: nowrap;
@@ -224,8 +260,8 @@ header h1 {
   top: 100%;
   left: 0;
   right: 0;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
+  background-color: var(--bg);
+  border: 2px solid var(--yellow);
   border-top: none;
   border-radius: 0 0 4px 4px;
   z-index: 100;
@@ -245,7 +281,7 @@ header h1 {
 
 .suggestion-item:hover,
 .suggestion-item.active {
-  background-color: var(--bg-tile);
+  background-color: rgba(255, 203, 5, 0.15);
 }
 
 .suggestion-item img {
@@ -268,11 +304,11 @@ header h1 {
 }
 
 .hint-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  background-color: var(--bg);
+  border: 2px solid var(--yellow);
+  border-radius: 6px;
   padding: 0.75rem 1rem;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: var(--text);
   animation: slideIn 0.3s ease-out;
 }
@@ -307,9 +343,9 @@ header h1 {
 }
 
 #modal-content {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  background-color: var(--bg);
+  border: 3px solid var(--yellow);
+  border-radius: 12px;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -318,6 +354,7 @@ header h1 {
   max-width: 320px;
   width: 90%;
   text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .modal-sprite {
@@ -329,20 +366,20 @@ header h1 {
 #modal-content h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--yellow);
   text-transform: capitalize;
 }
 
 .win-message {
-  color: var(--green);
+  color: var(--yellow);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 0.7rem;
 }
 
 .lose-message {
-  color: var(--accent);
+  color: var(--red);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 0.7rem;
 }
 
 .streak-info {
@@ -352,18 +389,18 @@ header h1 {
 
 .countdown {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.6rem;
   font-variant-numeric: tabular-nums;
 }
 
 .play-again-btn {
   padding: 0.75rem 2rem;
-  background-color: var(--accent);
-  color: var(--text);
+  background-color: var(--yellow);
+  color: var(--bg);
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s;
   margin-top: 0.5rem;
