@@ -45,6 +45,9 @@ function renderBoard() {
     elements.board.innerHTML = "";
     const answerLength = state.answer.name.length;
 
+    // Create dynamic tile sizing based on how long the pokemon name is
+    const tileSize = answerLength > 10 ? 40 : answerLength > 8 ? 46 : 52;
+
     // Build game board
     for (let row = 0; row < 6; row++){
         const rowE1 = document.createElement("div");
@@ -55,6 +58,8 @@ function renderBoard() {
             const tile = document.createElement("div");
             tile.classList.add("tile");
             tile.id = `tile-${row}-${col}`;
+            tile.style.width = `${tileSize}px`;
+            tile.style.height = `${tileSize}px`;
             rowE1.appendChild(tile);
         }
 
